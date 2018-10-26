@@ -1,0 +1,346 @@
+﻿@using AutomationDashboard.Web.Models
+@using AutomationDashboard.Model.Models
+@model List<MenuViewModel>
+
+<div class="right_col" role="main">
+
+    @foreach (MenuViewModel groups in Model)
+    {
+        <div class="row">
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <h2><a href="@Url.Action("Index", "Home", new { projectId = groups.Project.Id })" id="a_piechart_@groups.Project.FullName"><p class="title_project_name" style="font-size: 19px;">@groups.Project.DisplayName</p></a></h2>
+                        @*<h2>@Html.ActionLink(@groups.Project.Name, "Index", "Home", new { projectId = groups.Project.Id }, new { @class = "title_project_name" })</h2>*@
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                @foreach (SubProject item in groups.SubProjects)
+                {
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2><a href="" id="a_piechart_@item.FullName"><p class="title_project_name">@item.DisplayName</p></a></h2>
+                                <ul class="nav navbar-right panel_toolbox">
+                                    <li>
+                                        <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                    </li>
+                                    <li class="dropdown">
+                                        <a class="dropdown-toggle" role="button" aria-expanded="false" href="#" data-toggle="dropdown"><i class="fa fa-wrench"></i></a>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li>
+                                                <a href="#">Settings 1</a>
+                                            </li>
+                                            <li>
+                                                <a href="#">Settings 2</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a class="close-link"><i class="fa fa-close"></i></a>
+                                    </li>
+                                </ul>
+                                <div class="clearfix"></div>
+                                <p id="p_date_piechart_@item.FullName" class="title_project_name"></p>
+                            </div>
+                            <div class="x_content" style="width: 100%; height: 100%;">
+                                <canvas width="100%" height="100%" id="@item.FullName"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="clearfix" id="mypieChartDraw"></div>
+            </div>
+            <div class="row">
+                @foreach (SubProject item in groups.SubProjects)
+                {
+                    <div class="col-md-6 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2><a href="" id="a_linechart_@item.FullName"><p class="title_project_name">@item.DisplayName</p></a></h2>
+                                <ul class="nav navbar-right panel_toolbox">
+                                    <li>
+                                        <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                    </li>
+                                    <li class="dropdown">
+                                        <a class="dropdown-toggle" role="button" aria-expanded="false" href="#" data-toggle="dropdown"><i class="fa fa-wrench"></i></a>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li>
+                                                <a href="#">Settings 1</a>
+                                            </li>
+                                            <li>
+                                                <a href="#">Settings 2</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a class="close-link"><i class="fa fa-close"></i></a>
+                                    </li>
+                                </ul>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <canvas id="@item.FullName.Insert(item.FullName.Length, "_GridLineChart")"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="clearfix" id="gridLineChartDraw"></div>
+            </div>
+        </div>
+    }
+    <script>
+
+        window.chartColors = {
+            red: 'rgb(255,51,51)',
+            orange: 'rgb(255, 159, 64)',
+            yellow: 'rgb(255, 205, 86)',
+            green: 'rgb(75, 192, 192)',
+            blue: 'rgb(17,221,68)',
+            purple: 'rgb(153, 102, 255)',
+            grey: 'rgb(201, 203, 207)'
+        };
+
+
+        function drawPieChart(spFullName, data, date) {
+
+            var config = {
+                type: 'pie',
+                data: {
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            window.chartColors.blue,
+                            window.chartColors.red,
+                            window.chartColors.grey,
+                        ],
+                        label: 'Dataset 1'
+                    }],
+                    labels: [
+                        'Pass',
+                        'Fail',
+                        'Not Run',
+                    ]
+
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: false,
+                        text: date
+                    },
+                    legend: {
+                        position: 'right'
+                    },
+                    events: true,
+                    animation: {
+                        duration: 2000,
+                        easing: "easeOutQuart",
+                        onComplete: function () {
+                            var ctx = this.chart.ctx;
+                            ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'normal', Chart.defaults.global.defaultFontFamily);
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'bottom';
+
+                            this.data.datasets.forEach(function (dataset) {
+
+                                for (var i = 0; i < dataset.data.length; i++) {
+                                    var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model,
+                                        total = dataset._meta[Object.keys(dataset._meta)[0]].total,
+                                        mid_radius = model.innerRadius + (model.outerRadius - model.innerRadius) / 2,
+                                        start_angle = model.startAngle,
+                                        end_angle = model.endAngle,
+                                        mid_angle = start_angle + (end_angle - start_angle) / 2;
+
+                                    var x = mid_radius * Math.cos(mid_angle);
+                                    var y = mid_radius * Math.sin(mid_angle);
+
+                                    ctx.fillStyle = '#fff';
+                                    ctx.font = "bold 11pt Arial";
+                                    if (i == 3) { // Darker text color for lighter background
+                                        ctx.fillStyle = '#444';
+                                    }
+                                    var percent = dataset.data[i] + "%";
+                                    //console.log("TinhNgo: " + dataset.data[i]);
+                                    if (dataset.data[i] !== "0.00") {
+                                        ctx.fillText(percent, model.x + x, model.y + y);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            };
+
+            var ctx = document.getElementById(spFullName).getContext('2d');
+            var myPieChart = new Chart(ctx, config);
+
+        }
+
+        function getPieChartData(subProjectId, spFullName, spDisplayName) {
+            $.ajax({
+                url: "/Home/GetPieChartData",
+                type: "POST",
+                dataType: "text",
+                data: {
+                    subProjectId: subProjectId
+                },
+                success: function (result) {
+                    var obj = JSON.parse(result);
+                    console.log("GetPieChartData====>");
+                    console.log(obj);
+
+                    var fail = obj.data.fail;
+                    var pass = obj.data.pass;
+                    var notRun = obj.data.notRun;
+
+                    var passPercent;
+                    var failPercent;
+                    var notRunPercent;
+
+                    if (pass === fail) {
+                        passPercent = parseFloat(parseFloat(pass + "") / (pass + fail + notRun) * 100 + "").toFixed(2);
+                        failPercent = passPercent;
+                        notRunPercent = (100 - passPercent * 2).toFixed(2);
+                    } else
+                        if (pass === notRun) {
+                            passPercent = parseFloat(parseFloat(pass + "") / (pass + fail + notRun) * 100 + "").toFixed(2);
+                            notRunPercent = passPercent;
+                            failPercent = (100 - passPercent * 2).toFixed(2);
+                        } else
+                            if (fail === notRun) {
+                                failPercent = parseFloat(parseFloat(fail + "") / (pass + fail + notRun) * 100 + "").toFixed(2);
+                                notRunPercent = failPercent;
+                                passPercent = (100 - failPercent * 2).toFixed(2);
+                            } else
+                                if (fail !== pass !== notRun) {
+                                    var passPercent = parseFloat(parseFloat(pass + "") / (pass + fail + notRun) * 100 + "").toFixed(2);
+                                    var failPercent = parseFloat(parseFloat(fail + "") / (pass + fail + notRun) * 100 + "").toFixed(2);
+                                    var notRunPercent = parseFloat(100 - (parseFloat(passPercent) + parseFloat(failPercent))).toFixed(2);
+                                }
+
+
+                    drawPieChart(spFullName, [passPercent, failPercent, notRunPercent], obj.data.date);
+                    showTextInPieChart(spFullName, spDisplayName, obj.data.buildId, obj.data.date);
+                }
+            });
+        }
+
+        function showTextInPieChart(spFullName, spDisplayName, buildId, date) {
+            $('#a_piechart_' + spFullName).attr('href', 'Home/GetBuildDetail?subProjectName=' + spDisplayName + '&buildId=' + buildId + '&date=' + date);
+            $('#p_date_piechart_' + spFullName).text(date);
+        }
+
+        function drawGridLineChart(projectName, pass, fails, notRun, labels) {
+
+            function createConfig(pass, fails, notRun, labels, title) {
+                return {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Pass',
+                            backgroundColor: window.chartColors.blue,
+                            borderColor: window.chartColors.blue,
+                            data: pass,
+                            fill: false,
+                        },
+                        {
+                            label: 'Fail',
+                            fill: false,
+                            backgroundColor: window.chartColors.red,
+                            borderColor: window.chartColors.red,
+                            data: fails,
+                        },
+                        {
+                            label: 'NotRun',
+                            fill: false,
+                            backgroundColor: window.chartColors.grey,
+                            borderColor: window.chartColors.grey,
+                            data: notRun,
+                        },
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        animation: {
+                            duration: 2000,
+                            easing: "easeOutQuart",
+                        },
+                        title: {
+                            display: true,
+                            text: title
+                        },
+                        tooltips: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        legend: {
+                            position: 'right'
+                        },
+                        scales: {
+                            xAxes: [{
+                                gridLines: {
+                                    display: true
+                                },
+                            }],
+                            yAxes: [{
+                                gridLines: {
+                                    display: true
+                                },
+                                ticks: {
+                                    min: 0,
+                                    max: 20,
+                                    stepSize: 5
+                                }
+                            }]
+                        }
+                    }
+                };
+            }
+
+            var config = createConfig(pass, fails, notRun, labels, "Statistics last 7 days");
+
+            var ctx = document.getElementById(projectName + "_GridLineChart").getContext('2d');
+            var myPieChart = new Chart(ctx, config);
+        }
+
+        function getGridLineChartData(subProjectId, subProjectName) {
+            $.ajax({
+                url: "/Home/GetGridLineData",
+                type: "POST",
+                dataType: "text",
+                data: {
+                    subProjectId: subProjectId
+                },
+                success: function (result) {
+                    var obj = JSON.parse(result);
+                    console.log("getGridLineChartData===========>");
+                    console.log(obj);
+                    drawGridLineChart(subProjectName, obj.data.pass, obj.data.fails, obj.data.notRun, obj.data.labels);
+                    $('#a_linechart_' + subProjectName).attr('href', 'Home/GetBuild?subProjectId=' + subProjectId);
+                }
+            });
+        }
+
+        function getProjectAndGroup() {
+            $.ajax({
+                url: "/Home/GetProjectAndSubProject",
+                type: "POST",
+                dataType: "text",
+                success: function (result) {
+                    var obj = JSON.parse(result);
+                    console.log("GetProjectAndSubProject==========>");
+                    console.log(obj);
+                    obj.data.dashBoards.forEach(item => {
+                        getPieChartData(item.Id, item.FullName, item.DisplayName);
+                        getGridLineChartData(item.Id, item.FullName);
+                    });
+                }
+            });
+        }
+
+    </script>
+</div>

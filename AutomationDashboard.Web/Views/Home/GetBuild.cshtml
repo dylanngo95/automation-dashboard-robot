@@ -1,0 +1,115 @@
+﻿@using AutomationDashboard.Web.Models
+@model BuildListViewModel
+
+<div class="right_col" role="main">
+
+    <div class="row">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <h2><a href=""><p class="title_project_name" style="font-size: 19px;">SubProject: @Model.SubProjectName</p></a></h2>
+
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="clearfix"></div>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    @{
+                        List<SelectListItem> selectListItems = new List<SelectListItem>() {
+                                                     new SelectListItem {
+                                                            Text = "30",
+                                                            Value = "30"
+                                                     },
+                                                        new SelectListItem {
+                                                            Text = "50",
+                                                            Value = "50"
+                                                     },
+                                                        new SelectListItem {
+                                                            Text = "100",
+                                                            Value = "100"
+                                                     },
+                                                        new SelectListItem {
+                                                            Text = "500",
+                                                            Value = "500"
+                                                     }
+                                                };
+                    }
+                    <div class="x_title">
+                        @using (Html.BeginForm("GetBuild", "Home", FormMethod.Post, new { role = "form", id = "GetBuildForm" }))
+                        {
+                            <h3>List test results for build versions </h3>
+                            @Html.DropDownList(
+                              "Number",
+                              new SelectList(Model.SelectListItems, "Text", "Value"),
+                              "Please select",
+                              new { @class = "dropdownstyle", id = "sizeBuild" }
+                            )
+                            <input id="SubProjectId" name="SubProjectId" type="hidden" value="@Model.SubProjectId">
+                            <button class="btn btn-primary" type="submit" form="GetBuildForm" value="Submit">Filter</button>
+                        }
+                        <div id="GetBuild" class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="table-responsive">
+                            <table class="table table-striped jambo_table bulk_action">
+                                <thead>
+                                    <tr class="headings">
+                                        <th class="column-title">BUILD NO </th>
+                                        <th class="column-title">BUILD ID </th>
+                                        <th class="column-title">START TIME </th>
+                                        <th class="column-title">END TIME </th>
+                                        <th class="column-title">DURATION </th>
+                                        <th class="column-title">STATUS </th>
+                                        <th class="column-title">STATE </th>
+                                        <th class="column-title no-link last">
+                                            <span class="nobr">DETAILS</span>
+                                        </th>
+                                        <th class="bulk-actions" colspan="7">
+                                            <a class="antoo" style="color:#fff; font-weight:500;">Bulk Actions ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.Builds.Count; i++)
+                                    {
+                                        var item = Model.Builds[i];
+                                        <tr class="even pointer">
+                                            <td class=" ">#@item.Number</td>
+                                            <td class=" ">@item.Id</td>
+                                            <td class=" ">@item.StartDate</td>
+                                            <td class=" ">@item.FinishDate</td>
+                                            <td class=" ">@item.Duration</td>
+                                            <td class=" ">
+                                                @if (@item.Status.Equals("SUCCESS"))
+                                                {
+                                                    <p style="color: lawngreen;">@item.Status</p>
+                                                }
+                                                else
+                                                {
+                                                    <p style="color: red;">@item.Status</p>
+                                                }
+                                            </td>
+                                            <td class="a-right a-right ">@item.State</td>
+                                            <td class=" last">
+                                                @Html.ActionLink("View Detail", "GetBuildDetail", "Home",
+                                                   routeValues: new {
+                                                   subProjectName = ViewBag.subProjectName,
+                                                   buildId = item.Id,
+                                                   date = item.FinishDate.ToString()
+                                                }, htmlAttributes: new { })
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

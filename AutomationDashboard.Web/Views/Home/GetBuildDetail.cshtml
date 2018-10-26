@@ -1,0 +1,162 @@
+﻿@using AutomationDashboard.Models
+@model BuildDetail
+
+
+<div class="right_col" role="main">
+    <div class="col-md-12 col-sm-12 col-xs-12 p-3">
+        <div class="x_panel">
+
+            <div class="row">
+                <div class="x_title">
+                    <p class="title_project_name">SubProject: @ViewBag.subProjectName</p>
+                    <div class="clearfix"></div>
+                    <div style="display: flex; flex-direction: row;">
+                        <p class="title_project_name">BuildId: @ViewBag.buildId</p>
+                        <p class="title_project_name" style="margin-left: 3px;">| Pass: <p class="title_project_name" id="passValue" style="margin-left: 3px;">@Model.Pass</p></p>
+                        <p class="title_project_name" style="margin-left: 3px;">| Fail: <p class="title_project_name" id="failValue" style="margin-left: 3px;">@Model.Fail</p></p>
+                        <p class="title_project_name" style="margin-left: 3px;">| NotRun: <p class="title_project_name" id="notRunValue" style="margin-left: 3px;">@Model.NotRun</p></p>
+                    </div>
+                    <div class="clearfix"></div>
+                    <p class="title_project_name">Date: @ViewBag.date</p>
+
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="flex-container" style="width: 500px; height: 500px;">
+                        <div class="x_content">
+                            <canvas width="400px" height="400px" id="buildIdDetail"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix" id="mypieChartDrawBuildDeatail"></div>
+                
+                <script>
+
+                    function drawPieChartBuilDetail(projectName, data) {
+                        window.chartColors = {
+                            red: 'rgb(255,51,51)',
+                            orange: 'rgb(255, 159, 64)',
+                            yellow: 'rgb(255, 205, 86)',
+                            green: 'rgb(75, 192, 192)',
+                            blue: 'rgb(17,221,68)',
+                            purple: 'rgb(153, 102, 255)',
+                            grey: 'rgb(201, 203, 207)'
+                        };
+
+                        var config = {
+                            type: 'pie',
+                            data: {
+                                datasets: [{
+                                    data: data,
+                                    backgroundColor: [
+                                        window.chartColors.blue,
+                                        window.chartColors.red,
+                                        window.chartColors.grey
+                                    ],
+                                    label: 'Dataset 1'
+                                }],
+                                labels: [
+                                    'Pass',
+                                    'Fail',
+                                    'NotRun',
+                                ]
+
+                            },
+                            options: {
+                                responsive: true,
+                                title: {
+                                    display: false,
+                                    text: 'Statistics last build'
+                                },
+                                legend: {
+                                    position: 'right'
+                                },
+                                events: true,
+                                animation: {
+                                    duration: 1000,
+                                    easing: "easeOutQuart",
+                                    onComplete: function () {
+                                        var ctx = this.chart.ctx;
+                                        ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'normal', Chart.defaults.global.defaultFontFamily);
+                                        ctx.textAlign = 'center';
+                                        ctx.textBaseline = 'bottom';
+
+                                        this.data.datasets.forEach(function (dataset) {
+
+                                            for (var i = 0; i < dataset.data.length; i++) {
+                                                var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model,
+                                                    total = dataset._meta[Object.keys(dataset._meta)[0]].total,
+                                                    mid_radius = model.innerRadius + (model.outerRadius - model.innerRadius) / 2,
+                                                    start_angle = model.startAngle,
+                                                    end_angle = model.endAngle,
+                                                    mid_angle = start_angle + (end_angle - start_angle) / 2;
+
+                                                var x = mid_radius * Math.cos(mid_angle);
+                                                var y = mid_radius * Math.sin(mid_angle);
+
+                                                ctx.fillStyle = '#fff';
+                                                ctx.font = "bold 11pt Arial";
+                                                if (i == 3) {
+                                                    // Darker text color for lighter background
+                                                    ctx.fillStyle = '#444';
+                                                }
+                                                var percent = dataset.data[i] + "%";
+                                                if (dataset.data[i] !== "0.00") {
+                                                    ctx.fillText(percent, model.x + x, model.y + y);
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        };
+
+                        var ctx = document.getElementById('buildIdDetail').getContext('2d');
+                        var myPieChart = new Chart(ctx, config);
+
+                    }
+
+                    function getPieChartDataBuildDetail() {
+                        var pass = parseInt($('#passValue').text());
+                        var fail = parseInt($('#failValue').text());
+                        var notRun = parseInt($('#notRunValue').text());
+
+                        //console.log(pass);
+                        //console.log(fail);
+                        //console.log(notRun);
+
+                        var projectName = $('#text-justify').text();
+
+                        if (pass === fail) {
+                            passPercent = parseFloat(parseFloat(pass + "") / (pass + fail + notRun) * 100 + "").toFixed(2);
+                            failPercent = passPercent;
+                            notRunPercent = (100 - passPercent * 2).toFixed(2);
+                        } else
+                            if (pass === notRun) {
+                                passPercent = parseFloat(parseFloat(pass + "") / (pass + fail + notRun) * 100 + "").toFixed(2);
+                                notRunPercent = passPercent;
+                                failPercent = (100 - passPercent * 2).toFixed(2);
+                            } else
+                                if (fail === notRun) {
+                                    failPercent = parseFloat(parseFloat(fail + "") / (pass + fail + notRun) * 100 + "").toFixed(2);
+                                    notRunPercent = failPercent;
+                                    passPercent = (100 - failPercent * 2).toFixed(2);
+                                } else
+                                    if (fail !== pass !== notRun) {
+                                        var passPercent = parseFloat(parseFloat(pass + "") / (pass + fail + notRun) * 100 + "").toFixed(2);
+                                        var failPercent = parseFloat(parseFloat(fail + "") / (pass + fail + notRun) * 100 + "").toFixed(2);
+                                        var notRunPercent = parseFloat(100 - (parseFloat(passPercent) + parseFloat(failPercent))).toFixed(2);
+                                    }
+
+                        drawPieChartBuilDetail(projectName, [passPercent, failPercent, notRunPercent]);
+
+                    }
+
+                </script>
+
+            </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,94 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="@Url.Content("~/Content/images/favicon.ico")" />
+
+    <title>Niteco Automation Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link href="~/Content/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="~/Content/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="~/Content/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="~/Content/build/css/custom.css" rel="stylesheet">
+
+    <!-- bootstrap-daterangepicker -->
+    <link href="~/Content/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+    <!-- bootstrap-datetimepicker -->
+    <link href="~/Content/vendors/bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css" rel="stylesheet">
+
+
+</head>
+<body>
+    <div class="container body">
+        <div class="">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2><i class="fa fa-pie-chart"></i><a href="@Url.Action("Index", "Home", new { })">Automation Tools</a></h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                            <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                                <li role="presentation" class="">
+                                    <a href="@Url.Action("Index", "Setting", new { })" role="tab" aria-expanded="false">Settings</a>
+                                </li>
+                                <li role="presentation" class="">
+                                    <a href="@Url.Action("Index", "Project", new { })" role="tab" aria-expanded="false">Projects</a>
+                                </li>
+                                <li class="">
+                                    <a href="@Url.Action("Index", "SubProject", new { })" role="tab" aria-expanded="false">SubProjects</a>
+                                </li>
+                                <li role="presentation" class="">
+                                    <a href="@Url.Action("Index", "Build", new { })" role="tab" aria-expanded="false">Builds</a>
+                                </li>
+                                <li role="presentation" class="">
+                                    <a href="@Url.Action("Index", "BuildDetail", new { })" role="tab" aria-expanded="false">Build Details</a>
+                                </li>
+                                <li role="presentation" class="">
+                                    <a href="@Url.Action("CronSetting", "Home", new { })" role="tab" aria-expanded="false">Crons</a>
+                                </li>
+                            </ul>
+                            <div id="myTabContent" class="tab-content">
+                                @RenderBody()
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- jQuery -->
+    <script src="~/Content/vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="~/Content/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="~/Content/vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="~/Content/vendors/nprogress/nprogress.js"></script>
+    <!-- Chart.js -->
+    <script src="~/Content/production/js/chartjs/Chart.min.272.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="~/Content/build/js/custom.js"></script>
+
+    <!-- bootstrap-daterangepicker -->
+    <script src="~/Content/vendors/moment/min/moment.min.js"></script>
+    <script src="~/Content/vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <!-- bootstrap-datetimepicker -->
+    <script src="~/Content/vendors/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+
+
+
+</body>
+</html>

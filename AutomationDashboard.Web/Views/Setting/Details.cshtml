@@ -1,0 +1,67 @@
+﻿@model AutomationDashboard.Model.Models.Setting
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_LayoutHomeSetting.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Setting</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Domain)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Domain)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UrlBuildStart)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UrlBuildStart)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UrlBuildEnd)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UrlBuildEnd)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UrlReportStart)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UrlReportStart)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UrlReportEnd)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UrlReportEnd)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

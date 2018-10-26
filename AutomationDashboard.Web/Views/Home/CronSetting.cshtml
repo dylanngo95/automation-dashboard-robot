@@ -1,0 +1,132 @@
+﻿@using AutomationDashboard.Model.Models
+@model CronJobSetting
+
+@{
+    ViewBag.Title = "CronSetting";
+    Layout = "~/Views/Shared/_LayoutHomeSetting.cshtml";
+}
+<!-- jQuery UI CSS Reference -->
+<link href="@Url.Content("~/Content/themes/base/jquery-ui.min.css")" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <h2><a href=""><p class="title_project_name" style="font-size: 19px;">CronJob settings</p></a></h2>
+        </div>
+
+        <div id="content" style="display: flex; flex-direction: column;">
+
+            @using (Html.BeginForm("CronSetting", "Home", FormMethod.Post, new { role = "form", id = "CronSettingForm" }))
+            {
+                <div style="display: flex; flex-direction: column;">
+
+                    @*choose date*@
+                    <div class="row calendar-exibit">
+                        <!-- Code to wire up your DatePicker -->
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <div class="input-group date">
+                                    <input type="text" class="form-control" readonly="readonly" id="CronTime" name="CronTime" value="@Model.CronTime.ToString("HH:mm:ss tt")">
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" name="UrlCronJob" id="UrlCronJob" placeholder="UrlCronJob Example: http://localhost/Home/RunCronJobExternal" value="@Model.UrlCronJob" />
+                        </div>
+                    </div>
+
+                    @*choose options*@
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+
+                        <div class="checkbox">
+                            @if (@Model.IsActivate)
+                            {
+                                <label>
+                                    <input type="checkbox" value="true" checked="checked" name="IsActivate" id="IsActivate"> Active auto dowload
+                                </label>
+                            }
+                            else
+                            {
+                                <label>
+                                    <input type="checkbox" value="false" name="IsActivate" id="IsActivate"> Active auto dowload
+                                </label>
+                            }
+
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-success" style="width: 80px;">Save</button>
+
+                </div>
+            }
+            <button onclick="getBuilds()" id="download-manual" class="btn btn-success" style="width: 150px;">Dowload manual</button>
+            <button onclick="cleanAndGetBuild()" id="clean-download-manual" class="btn btn-success" style="width: 150px;">Clean and download</button>
+        </div>
+
+
+        <div id="loading">
+            <div id="spinner" class="spinner"></div>
+        </div>
+
+    </div>
+
+    <script>
+        function getBuilds() {
+            document.getElementById('content').style.visibility = 'hidden';
+            document.getElementById('spinner').style.visibility = 'visible';
+
+            $.ajax({
+                url: "/Home/RunCronJobInternal",
+                type: "POST",
+                dataType: "text",
+                data: {
+                },
+                success: function (result) {
+                    document.getElementById('content').style.visibility = 'visible';
+                    document.getElementById('spinner').style.visibility = 'hidden';
+                    var obj = JSON.parse(result);
+                    console.log("getGridLineChartData===========>");
+                    console.log(obj);
+                    if (obj.status === 200) {
+                        alert("Get all builds and build detail complete");
+                    } else {
+                        alert("Get all builds and build detail fail");
+                    }
+                }
+            });
+        };
+
+        function cleanAndGetBuild() {
+            document.getElementById('content').style.visibility = 'hidden';
+            document.getElementById('spinner').style.visibility = 'visible';
+
+            $.ajax({
+                url: "/Home/CleanAndRunCronJob",
+                type: "POST",
+                dataType: "text",
+                data: {
+                },
+                success: function (result) {
+                    document.getElementById('content').style.visibility = 'visible';
+                    document.getElementById('spinner').style.visibility = 'hidden';
+                    var obj = JSON.parse(result);
+                    console.log("getGridLineChartData===========>");
+                    console.log(obj);
+                    if (obj.status === 200) {
+                        alert("Get all builds and build detail complete");
+                    } else {
+                        alert("Get all builds and build detail fail");
+                    }
+                }
+            });
+        }
+
+    </script>
+
+</div>
+
+

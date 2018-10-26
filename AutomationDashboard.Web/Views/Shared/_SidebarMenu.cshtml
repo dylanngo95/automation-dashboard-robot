@@ -1,0 +1,37 @@
+﻿@using AutomationDashboard.Web.Models
+@using AutomationDashboard.Model.Models
+@model List<MenuViewModel>
+
+@{
+    Layout = null;
+}
+
+<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+    <div class="menu_section">
+        <ul class="nav side-menu">
+
+            <li>
+                <a href="/"><i class="fa fa-pie-chart"></i> Dashboard </a>
+            </li>
+
+            @foreach (MenuViewModel item in Model)
+            {
+                <li>
+                    <a><i class="fa fa-folder-open"></i> @item.Project.DisplayName <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                        @foreach (SubProject subProject in item.SubProjects)
+                        {
+                            <li>@Html.ActionLink(subProject.DisplayName, "GetBuild", "Home", routeValues: new { subProjectId = subProject.Id }, htmlAttributes: new { alt = subProject.Id })</li>
+                        }
+                    </ul>
+                </li>
+            }
+
+             <li>
+                  <a href="/Setting/Index"><i class="fa fa-cog"></i> Setting <span class="fa fa-chevron-down"></span></a>
+             </li>
+
+        </ul>
+    </div>
+
+</div>
